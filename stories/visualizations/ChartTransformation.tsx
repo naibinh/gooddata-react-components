@@ -749,7 +749,7 @@ storiesOf('Internal/HighCharts/ChartTransformation', module)
             )
         );
     })
-   .add('Donut chart view viewBy attribute', () => {
+    .add('Donut chart view viewBy attribute', () => {
         const dataSet = fixtures.barChartWithViewByAttribute;
 
         return screenshotWrap(
