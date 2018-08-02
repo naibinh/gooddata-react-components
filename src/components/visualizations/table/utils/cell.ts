@@ -1,6 +1,6 @@
 // (C) 2007-2018 GoodData Corporation
 import * as classNames from 'classnames';
-import { colors2Object, numberFormat } from '@gooddata/numberjs';
+import { colors2Object, ISeparators, numberFormat } from '@gooddata/numberjs';
 import { styleVariables } from '../../styles/variables';
 
 import {
@@ -16,6 +16,7 @@ import {
 } from '../../../../interfaces/Table';
 
 import { ALIGN_LEFT, ALIGN_RIGHT } from '../constants/align';
+import { DEFAULT_NUMBER_SEPARATOR } from '../../../../constants/numberSeparator';
 
 export function getColumnAlign(header: TableHeader): Align {
     return isMeasureTableHeader(header) ? ALIGN_RIGHT : ALIGN_LEFT;
@@ -34,7 +35,8 @@ export function getCellClassNames(rowIndex: number, columnKey: number, isDrillab
 export function getStyledLabel(
     header: TableHeader,
     cellContent: TableCell,
-    applyColor: boolean = true
+    applyColor: boolean = true,
+    numberSeparator: ISeparators = DEFAULT_NUMBER_SEPARATOR
 ): ITableCellStyledLabel {
     if (isAttributeCell(cellContent)) {
         return {
@@ -44,7 +46,7 @@ export function getStyledLabel(
     }
 
     const parsedNumber: string | number = cellContent === null ? '' : parseFloat(cellContent);
-    const formattedNumber: string = numberFormat(parsedNumber, (header as IMeasureTableHeader).format);
+    const formattedNumber: string = numberFormat(parsedNumber, (header as IMeasureTableHeader).format, undefined, numberSeparator);
     const { label: origLabel, color } = colors2Object(formattedNumber);
 
     let style: ITableCellStyle;

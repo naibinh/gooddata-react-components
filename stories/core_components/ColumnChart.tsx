@@ -89,4 +89,20 @@ storiesOf('Core components/ColumnChart', module)
                 />
             </div>
         )
-    ));
+    ))
+    .add('regional number format', () => (
+        screenshotWrap(
+            <div style={wrapperStyle}>
+                <ColumnChart
+                    projectId="storybook"
+                    measures={[MEASURE_1, MEASURE_2]}
+                    viewBy={ATTRIBUTE_1}
+                    config={{ numberSeparator: { thousand: '.', decimal: ',' } }}
+                    onError={onErrorHandler}
+                    LoadingComponent={null}
+                    ErrorComponent={null}
+                />
+            </div>
+        )
+    ))
+;

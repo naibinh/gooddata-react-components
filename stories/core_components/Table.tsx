@@ -141,4 +141,20 @@ storiesOf('Core components/Table', module)
                 />
             </div>
         )
+    ))
+    .add('with table and formatted number', () => (
+        screenshotWrap(
+             <div style={wrapperStyle}>
+                <Table
+                    projectId="storybook"
+                    measures={[MEASURE_1, MEASURE_2]}
+                    attributes={[ATTRIBUTE_1]}
+                    onError={onErrorHandler}
+                    pushData={logTotalsChange}
+                    LoadingComponent={null}
+                    ErrorComponent={null}
+                    config={{numberSeparator: {thousand: ',', decimal: '.'}}}
+                />
+            </div>
+        )
     ));

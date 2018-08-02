@@ -3,6 +3,7 @@ import * as React from 'react';
 import noop = require('lodash/noop');
 import difference = require('lodash/difference');
 import uniq = require('lodash/uniq');
+import { get } from 'lodash';
 
 import { AFM, VisualizationObject } from '@gooddata/typings';
 
@@ -183,7 +184,9 @@ class SimpleTable extends
             totalsEditAllowed,
             execution
         } = this.props;
-
+        
+        const numberSeparator = get(this.props, 'config.numberSeparator', undefined);
+        
         // Short term solution (See BB-641)
         const indexedTotals = convertToIndexedTotals(totals, dataSource.getAfm(), resultSpec);
 
@@ -199,7 +202,7 @@ class SimpleTable extends
                                 fixEmptyHeaderItems(execution.executionResult, props.emptyHeaderString)
                             }
                             afterRender={afterRender}
-                            config={{ stickyHeaderOffset }}
+                            config={{ stickyHeaderOffset, numberSeparator }}
                             drillableItems={drillableItems}
                             height={height}
                             maxHeight={maxHeight}
