@@ -49,6 +49,8 @@ import {
     IColorStrategy
 } from '../colorFactory';
 import { IColorPaletteItem } from '../../../../interfaces/Config';
+import { NORMAL_STACK, PERCENT_STACK } from '../highcharts/getOptionalStackingConfiguration';
+import { VisualizationTypes } from '../../../..';
 
 export { IPoint };
 
@@ -2273,7 +2275,9 @@ describe('chartOptionsBuilder', () => {
             y: 1,
             format: '# ###',
             name: 'point',
-            category: 'category',
+            category: {
+                name: 'category'
+            },
             series: {
                 name: 'series'
             }
@@ -2311,7 +2315,9 @@ describe('chartOptionsBuilder', () => {
             it('should unescape brackets and htmlescape category', () => {
                 const tooltip = tooltipFn({
                     ...pointData,
-                    category: '&gt;"&\'&lt;'
+                    category: {
+                        name: '&gt;"&\'&lt;'
+                    }
                 });
                 expect(getValues(tooltip)).toEqual(['Department', '&gt;&quot;&amp;&#39;&lt;', 'series', ' 1']);
             });
@@ -2460,7 +2466,9 @@ describe('chartOptionsBuilder', () => {
 
     describe('generateTooltipTreemapFn', () => {
         const point: IPoint = {
-            category: 'category',
+            category: {
+                name: 'category'
+            },
             value: 300,
             name: 'point name',
             x: 0,
@@ -2631,7 +2639,9 @@ describe('chartOptionsBuilder', () => {
                     y: 1,
                     format: '# ###',
                     name: 'point',
-                    category: 'category',
+                    category: {
+                        name: 'category'
+                    },
                     series: {
                         name: 'series'
                     }
@@ -2663,7 +2673,9 @@ describe('chartOptionsBuilder', () => {
                     y: 1,
                     format: '# ###',
                     name: 'point',
-                    category: 'category',
+                    category: {
+                        name: 'category'
+                    },
                     series: {
                         name: 'series'
                     }
@@ -2709,7 +2721,9 @@ describe('chartOptionsBuilder', () => {
                     y: 1,
                     format: '# ###',
                     name: 'point',
-                    category: 'category',
+                    category: {
+                        name: 'category'
+                    },
                     series: {
                         name: 'series'
                     }
@@ -2751,7 +2765,9 @@ describe('chartOptionsBuilder', () => {
                     y: 1,
                     format: '# ###',
                     name: 'point',
-                    category: 'category',
+                    category: {
+                        name: 'category'
+                    },
                     series: {
                         name: 'series'
                     },
@@ -2795,7 +2811,9 @@ describe('chartOptionsBuilder', () => {
                     y: 1,
                     format: '# ###',
                     name: 'point',
-                    category: 'category',
+                    category: {
+                        name: 'category'
+                    },
                     series: {
                         name: 'series'
                     }
@@ -2811,7 +2829,9 @@ describe('chartOptionsBuilder', () => {
                     y: 1,
                     format: '# ###',
                     name: 'point',
-                    category: 'category',
+                    category: {
+                        name: 'category'
+                    },
                     series: {
                         name: 'series'
                     }
@@ -3356,6 +3376,72 @@ describe('chartOptionsBuilder', () => {
                     seriesIndices: [0, 1, 2]
                 }];
                 expect(chartOptions.yAxes).toEqual(expectedAxis);
+            });
+        });
+
+        describe('optional stacking', () => {
+            it('should return grouped categories with viewing by 2 attributes', () => {
+                const {
+                    data: {
+                        categories
+                    },
+                    isViewByTwoAttributes
+                } = generateChartOptions(fixtures.barChartWith4MetricsAndViewBy2Attribute);
+
+                expect(isViewByTwoAttributes).toBeTruthy();
+                expect(categories).toEqual([{
+                    name: 'Direct Sales',
+                    categories: ['East Coast', 'West Coast']
+                }, {
+                    name: 'Inside Sales',
+                    categories: ['East Coast', 'West Coast']
+                }]);
+            });
+
+            it('should not return grouped categories with viewing by one attribute', () => {
+                const {
+                    data: {
+                        categories
+                    },
+                    isViewByTwoAttributes
+                } = generateChartOptions(fixtures.barChartWith3MetricsAndViewByAttribute);
+
+                expect(isViewByTwoAttributes).toBeFalsy();
+                expect(categories).toEqual(['<button>2008</button>', '2009', '2010', '2011', '2012']);
+            });
+
+            it.each`
+                description | config
+                ${'undefined'} | ${undefined}
+                ${'false'} | ${{ stackMeasures: false, stackMeasuresToPercent: false }}
+            `('should return \'undefined\' stacking with stack options are $description', (
+                { config }: {config: any}
+            ) => {
+                const { stacking } = generateChartOptions(
+                    fixtures.barChartWith3MetricsAndViewByAttribute,
+                    {
+                        type: VisualizationTypes.COLUMN,
+                        ...config
+                    }
+                );
+                expect(stacking).toBeFalsy();
+            });
+
+            it.each`
+                description | config | expectation
+                ${'should return \'normal\' stacking'} | ${{ stackMeasures: true }} | ${NORMAL_STACK}
+                ${'should return \'percent\' stacking'} | ${{ stackMeasuresToPercent: true }} | ${PERCENT_STACK}
+                ${'should \'percent\' overwrite \'normal\' stacking'} |
+                    ${{ stackMeasures: true, stackMeasuresToPercent: true }} | ${PERCENT_STACK}
+            `('$description', ({ config, expectation }: {config: any, expectation: string}) => {
+                const { stacking } = generateChartOptions(
+                    fixtures.barChartWith3MetricsAndViewByAttribute,
+                    {
+                        type: VisualizationTypes.COLUMN,
+                        ...config
+                    }
+                );
+                expect(stacking).toBe(expectation);
             });
         });
     });

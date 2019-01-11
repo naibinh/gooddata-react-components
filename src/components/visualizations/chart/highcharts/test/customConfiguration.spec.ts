@@ -2,7 +2,11 @@
 import get = require('lodash/get');
 import set = require('lodash/set');
 import noop = require('lodash/noop');
-import { getCustomizedConfiguration } from '../customConfiguration';
+import {
+    formatOverlapping,
+    formatOverlappingForParentAttribute,
+    getCustomizedConfiguration
+} from '../customConfiguration';
 import { ISeriesDataItem } from '../../chartOptionsBuilder';
 import { VisualizationTypes } from '../../../../../constants/visualizationTypes';
 import { immutableSet } from '../../../utils/common';
@@ -58,7 +62,20 @@ describe('getCustomizedConfiguration', () => {
             }
         });
 
-        expect(result.xAxis[0].labels.formatter).not.toBeUndefined();
+        expect(result.xAxis[0].labels.formatter).toBe(formatOverlapping);
+    });
+
+    it ('should set formatter for xAxis labels to prevent overlapping for stacking bar chart with 90 rotation', () => {
+        const result = getCustomizedConfiguration({
+            ...chartOptions,
+            isViewByTwoAttributes: true,
+            type: 'bar',
+            xAxisProps: {
+                rotation: '90'
+            }
+        });
+
+        expect(result.xAxis[0].labels.formatter).toBe(formatOverlappingForParentAttribute);
     });
 
     it ('shouldn\'t set formatter for xAxis by default', () => {
