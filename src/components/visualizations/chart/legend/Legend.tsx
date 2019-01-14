@@ -6,7 +6,7 @@ import * as cx from 'classnames';
 import FluidLegend from './FluidLegend';
 import StaticLegend from './StaticLegend';
 import { ChartType } from '../../../../constants/visualizationTypes';
-import { isHeatmap } from '../../utils/common';
+import { isComboChart, isHeatmap } from '../../utils/common';
 import HeatmapLegend from './HeatmapLegend';
 import { IntlWrapper } from '../../../core/base/IntlWrapper';
 import { IntlTranslationsProvider, ITranslationsComponentProps } from '../../../core/base/TranslationsProvider';
@@ -109,10 +109,15 @@ export default class Legend extends React.PureComponent<ILegendProps, ILegendSta
     }
 
     public render() {
-        const { responsive } = this.props;
+        const { responsive, chartType } = this.props;
         const { showFluidLegend } = this.props;
 
         const fluidLegend = responsive && showFluidLegend;
+
+        if (isComboChart(chartType)) {
+            // TODO: fix legend for combo chart
+            return null;
+        }
 
         if (isHeatmap(this.props.chartType)) {
             return this.renderHeatmapLegend();

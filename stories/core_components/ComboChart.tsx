@@ -20,6 +20,26 @@ import { CUSTOM_COLOR_PALETTE_CONFIG } from '../data/configProps';
 const wrapperStyle = { width: 800, height: 400 };
 
 storiesOf('Core components/ComboChart', module)
+    .add('dual axes', () => (
+        screenshotWrap(
+            <div style={wrapperStyle}>
+                <ComboChart
+                    projectId="storybook"
+                    columnMeasures={[MEASURE_1]}
+                    lineMeasures={[MEASURE_2]}
+                    viewBy={ATTRIBUTE_1}
+                    config={{
+                        secondary_yaxis: {
+                            measures: [MEASURE_2.measure.localIdentifier]
+                        }
+                    }}
+                    onError={onErrorHandler}
+                    LoadingComponent={null}
+                    ErrorComponent={null}
+                />
+            </div>
+        )
+    ))
     .add('one column measure, one line measures, one attribute', () => (
         screenshotWrap(
             <div style={wrapperStyle}>

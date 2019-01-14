@@ -97,7 +97,8 @@ const unsupportedStackingTypes = [
 export const supportedDualAxesChartTypes = [
     VisualizationTypes.COLUMN,
     VisualizationTypes.BAR,
-    VisualizationTypes.LINE
+    VisualizationTypes.LINE,
+    VisualizationTypes.COMBO
 ];
 
 export interface IAxis {
