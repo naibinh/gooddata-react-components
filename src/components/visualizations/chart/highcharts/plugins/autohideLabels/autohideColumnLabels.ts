@@ -111,7 +111,7 @@ function areNeighborsOverlapping(neighbors: any[]) {
  * Primary axis:    [pointP1, pointP2, pointP3]
  * Secondary axis:  [pointS1, pointS2, pointS3]
  * @param stacks
- * @return [pointP1, pointS1, pointP2, pointS1, pointP3, pointS3]
+ * @return [pointP1, pointS1, pointP2, pointS2, pointP3, pointS3]
  */
 function getStackLabelPointsForDualAxis(stacks: any[]) {
     return flatten(
@@ -164,14 +164,13 @@ function toggleStackedLabelsForDualAxisForSingleAxis() {
 
 function toggleStackedLabels() {
     const { yAxis } = this;
-    const { length: axisNumber } = yAxis;
 
     // CL-10676 - Return if yAxis is undefined
-    if (!yAxis || axisNumber === 0) {
+    if (!yAxis || yAxis.length === 0) {
         return;
     }
 
-    if (axisNumber === 2) {
+    if (yAxis.length === 2) {
         return toggleStackedLabelsForDualAxis.call(this);
     }
     return toggleStackedLabelsForDualAxisForSingleAxis.call(this);

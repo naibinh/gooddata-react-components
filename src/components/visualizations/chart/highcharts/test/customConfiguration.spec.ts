@@ -3,6 +3,7 @@ import get = require('lodash/get');
 import set = require('lodash/set');
 import noop = require('lodash/noop');
 import {
+    escapeCategories,
     formatOverlapping,
     formatOverlappingForParentAttribute,
     getCustomizedConfiguration
@@ -566,5 +567,31 @@ describe('getCustomizedConfiguration', () => {
 
             expect(result.tooltip.followPointer).toBeFalsy();
         });
+    });
+});
+
+describe('escapeCategories', () => {
+    it('should escape string categories', () => {
+        const categories = escapeCategories(['cat1', '<cat2/>', '<cat3></cat3>']);
+        expect(categories).toEqual([
+            'cat1',
+            '&lt;cat2/&gt;',
+            '&lt;cat3&gt;&lt;/cat3&gt;'
+        ]);
+    });
+
+    it('should escape object categories', () => {
+        const categories = escapeCategories([{
+            name: 'Status',
+            categories: ['cat1', '<cat2/>', '<cat3></cat3>']
+        }]);
+        expect(categories).toEqual([{
+            name: 'Status',
+            categories: [
+                'cat1',
+                '&lt;cat2/&gt;',
+                '&lt;cat3&gt;&lt;/cat3&gt;'
+            ]
+        }]);
     });
 });

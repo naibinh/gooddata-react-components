@@ -21,7 +21,11 @@ import {
     getBubbleChartSeries,
     getHeatmapDataClasses,
     getTreemapAttributes,
-    isDerivedMeasure
+    isDerivedMeasure,
+    getCategoriesForTwoAttributes,
+    getDistinctAttributeHeaderName,
+    IUnwrappedAttributeHeadersWithItems,
+    IViewByTwoAttributes
 } from '../chartOptionsBuilder';
 import { DEFAULT_CATEGORIES_LIMIT } from '../highcharts/commonConfiguration';
 import { generateChartOptions, getMVS } from './helper';
@@ -3442,6 +3446,67 @@ describe('chartOptionsBuilder', () => {
                     }
                 );
                 expect(stacking).toBe(expectation);
+            });
+
+            describe('getCategoriesForTwoAttributes', () => {
+                const viewByAttribute: IUnwrappedAttributeHeadersWithItems = {
+                    uri: '/uri',
+                    identifier: '5.df',
+                    localIdentifier: 'a2',
+                    name: 'Status',
+                    formOf: {
+                        uri: '/gdc/md/storybook/obj/5',
+                        identifier: '5',
+                        name: 'Status'
+                    },
+                    items: [{
+                        attributeHeaderItem: {
+                            uri: '/gdc/md/storybook/obj/5/elements?id=1',
+                            name: 'Won'
+                        }
+                    }, {
+                        attributeHeaderItem: {
+                            uri: '/gdc/md/storybook/obj/5/elements?id=2',
+                            name: 'Lost'
+                        }
+                    }, {
+                        attributeHeaderItem: {
+                            uri: '/gdc/md/storybook/obj/5/elements?id=1',
+                            name: 'Won'
+                        }
+                    }, {
+                        attributeHeaderItem: {
+                            uri: '/gdc/md/storybook/obj/5/elements?id=2',
+                            name: 'Lost'
+                        }
+                    }]
+                };
+                const viewByTwoAttributes: IViewByTwoAttributes = {
+                    items: [{
+                        attributeHeaderItem: {
+                            uri: '/gdc/md/storybook/obj/4/elements?id=1',
+                            name: 'Department'
+                        }
+                    }]
+                };
+
+                it('should return categories for two attributes', () => {
+                    const categories = getCategoriesForTwoAttributes(viewByAttribute, viewByTwoAttributes);
+                    expect(categories).toEqual([{
+                        name: 'Department',
+                        categories: ['Won', 'Lost']
+                    }]);
+                });
+
+                it('should return empty category', () => {
+                    const categories = getCategoriesForTwoAttributes(viewByAttribute, { items: [] });
+                    expect(categories).toHaveLength(0);
+                });
+
+                it('should only return distinct header names', () => {
+                    const attributes  = viewByAttribute.items.reduce(getDistinctAttributeHeaderName, []);
+                    expect(attributes).toEqual(['Won', 'Lost']);
+                });
             });
         });
     });

@@ -6,6 +6,12 @@ import { VIEW_BY_ATTRIBUTES_LIMIT } from '../components/visualizations/chart/con
 export function getViewByTwoAttributes(
     viewBy: VisualizationObject.IVisualizationAttribute | VisualizationObject.IVisualizationAttribute[]
 ) {
-    // only get first two attributes
-    return viewBy ? (isArray(viewBy) ? viewBy.slice(0, VIEW_BY_ATTRIBUTES_LIMIT) : [viewBy]) : [];
+    if (!viewBy) {
+        return [];
+    }
+    if (viewBy && isArray(viewBy)) {
+        // only get first two attributes
+        return viewBy.slice(0, VIEW_BY_ATTRIBUTES_LIMIT);
+    }
+    return [viewBy] as VisualizationObject.IVisualizationAttribute[];
 }

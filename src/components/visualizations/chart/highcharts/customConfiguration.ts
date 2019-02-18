@@ -704,7 +704,7 @@ function getHeatmapDataConfiguration(chartOptions: IChartOptions) {
     };
 }
 
-function escapeCategories(dataCategories: any) {
+export function escapeCategories(dataCategories: any) {
     return map(dataCategories, (category: any) => {
         return isString(category) ? escapeAngleBrackets(category) : {
             ...category,
@@ -960,7 +960,7 @@ function getYAxisTickConfiguration(chartOptions: IChartOptions, axisPropsKey: st
 }
 
 function getAxesConfiguration(chartOptions: IChartOptions) {
-    const { type }: any = chartOptions;
+    const type = chartOptions.type as ChartType;
 
     return {
         plotOptions: {

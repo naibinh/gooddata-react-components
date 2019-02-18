@@ -743,7 +743,7 @@ export function generateTooltipFn(
                 customEscape(viewByAttribute.formOf.name),
                 // since applying 'grouped-categories' plugin,
                 // 'category' type is replaced from string to object in highchart
-                customEscape(point.category.name || point.name)
+                customEscape(point.category && point.category.name || point.name)
             ]);
         } else if (isOneOfTypes(type, multiMeasuresAlternatingTypes)) {
             // Pie charts with measure only have to use point.name instead of series.name to get the measure name
@@ -869,7 +869,7 @@ export function generateTooltipTreemapFn(viewByAttribute: any, stackByAttribute:
             ]);
             textData.push([customEscape(point.series.name), formattedValue]);
         } else {
-            textData.push([customEscape(point.category.name), formattedValue]);
+            textData.push([customEscape(point.category && point.category.name), formattedValue]);
         }
 
         return `<table class="tt-values gd-viz-tooltip-table">${textData.map(line => (
@@ -1071,7 +1071,7 @@ export function getDrillableSeries(
     });
 }
 
-function getDistinctAttributeHeaderName(result: string[], item: Execution.IResultAttributeHeaderItem): string[] {
+export function getDistinctAttributeHeaderName(result: string[], item: Execution.IResultAttributeHeaderItem): string[] {
     const { attributeHeaderItem: { name } } = item;
     if (!includes(result, name)) {
         result.push(name);
@@ -1109,12 +1109,12 @@ function getCategories(
     return [];
 }
 
-function getCategoriesForDualAxis(
+export function getCategoriesForTwoAttributes(
     viewByAttribute: IUnwrappedAttributeHeadersWithItems,
     viewByTwoAttributes: IViewByTwoAttributes
 ) {
-    const outsideAttributes = viewByTwoAttributes.items.reduce(getDistinctAttributeHeaderName, []);
     const insideAttributes  = viewByAttribute.items.reduce(getDistinctAttributeHeaderName, []);
+    const outsideAttributes = viewByTwoAttributes.items.reduce(getDistinctAttributeHeaderName, []);
 
     return outsideAttributes.map((outsideAttribute: string) => ({
         name: outsideAttribute,
@@ -1558,7 +1558,7 @@ export function getChartOptions(
     const series = assignYAxes(drillableSeries, yAxes);
 
     let categories = viewByTwoAttributes ?
-                        getCategoriesForDualAxis(viewByAttribute, viewByTwoAttributes) :
+                        getCategoriesForTwoAttributes(viewByAttribute, viewByTwoAttributes) :
                         getCategories(type, measureGroup, viewByAttribute, stackByAttribute);
 
     // Pie charts dataPoints are sorted by default by value in descending order
