@@ -45,7 +45,7 @@ describe('getCustomizedConfiguration', () => {
         expect(result.series[0].data[0].name).toEqual('&lt;b&gt;bbb&lt;/b&gt;');
     });
 
-    it('should handle "%" format on axis and use lable formater', () => {
+    it('should handle "%" format on axis and use label formatter', () => {
         const chartOptionsWithFormat = immutableSet(chartOptions, 'yAxes[0].format', '0.00 %');
         const resultWithoutFormat = getCustomizedConfiguration(chartOptions);
         const resultWithFormat = getCustomizedConfiguration(chartOptionsWithFormat);
@@ -95,7 +95,7 @@ describe('getCustomizedConfiguration', () => {
         expect(result.plotOptions.series.connectNulls).toBeTruthy();
     });
 
-    it('should NOT set connectNulls for NONstacked Area chart', () => {
+    it('should NOT set connectNulls for NON stacked Area chart', () => {
         const result = getCustomizedConfiguration({
             ...chartOptions,
             type: VisualizationTypes.AREA,
@@ -566,6 +566,60 @@ describe('getCustomizedConfiguration', () => {
             });
 
             expect(result.tooltip.followPointer).toBeFalsy();
+        });
+    });
+
+    describe('format data labels', () => {
+        const getDataLabelPoint = (opposite = false, axisNumber = 1) => ({
+            y: 1000,
+            percentage: 55.55,
+            series: {
+                chart: {
+                    yAxis: Array(axisNumber).fill({})
+                },
+                yAxis: {
+                    opposite
+                }
+            },
+            point: {
+                format: '#,##0.00'
+            }
+        });
+
+        it('should return number for not supported chart', () => {
+            const chartOptions = { type: VisualizationTypes.LINE, yAxes: [{}] };
+            const configuration = getCustomizedConfiguration(chartOptions);
+            const formatter = get(configuration, 'plotOptions.bar.dataLabels.formatter', noop);
+            const dataLabelPoint = getDataLabelPoint();
+            const dataLabel = formatter.call(dataLabelPoint);
+            expect(dataLabel).toBe('1,000.00');
+        });
+
+        it.each([
+            ['should return number for single axis chart without \'Stack to 100%\'', 1],
+            ['should return number for dual axis chart without \'Stack to 100%\'', 2]
+        ])('%s', (_description: string, axisNumber: number) => {
+            const chartOptions = { type: VisualizationTypes.COLUMN, yAxes: Array(axisNumber).fill({}) };
+            const configuration = getCustomizedConfiguration(chartOptions);
+            const formatter = get(configuration, 'plotOptions.bar.dataLabels.formatter', noop);
+            const dataLabelPoint = getDataLabelPoint(false, axisNumber);
+            const dataLabel = formatter.call(dataLabelPoint);
+            expect(dataLabel).toBe('1,000.00');
+        });
+
+        it.each([
+            ['should return percentage for left single axis chart with \'Stack to 100%\'', false, 1, '55.55%'],
+            ['should return percentage for right single axis chart with \'Stack to 100%\'', true, 1, '55.55%'],
+            ['should return percentage for primary axis for dual chart with \'Stack to 100%\'', false, 2, '55.55%'],
+            ['should return number for secondary axis for dual chart with \'Stack to 100%\'', true, 2, '1,000.00']
+        ])('%s', (_description: string, opposite: boolean, axisNumber: number, expectation: string) => {
+            const chartOptions = { type: VisualizationTypes.COLUMN, yAxes: Array(axisNumber).fill({}) };
+            const config = { stackMeasuresToPercent: true };
+            const configuration = getCustomizedConfiguration(chartOptions, config);
+            const formatter = get(configuration, 'plotOptions.bar.dataLabels.formatter', noop);
+            const dataLabelPoint = getDataLabelPoint(opposite, axisNumber);
+            const dataLabel = formatter.call(dataLabelPoint);
+            expect(dataLabel).toBe(expectation);
         });
     });
 });

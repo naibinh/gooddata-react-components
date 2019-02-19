@@ -103,6 +103,19 @@ storiesOf('Internal/OptionalStacking', module)
             </div>
         );
     })
+    .add('Charts with viewBy 2 attributes and \'Stack to 100%\' enabled and dataLabels enabled', () => {
+        const config = {
+            stackMeasuresToPercent: true,
+            dataLabels: {
+                visible: true
+            }
+        };
+        return screenshotWrap(
+            <div>
+                {renderSupportedCharts(config)}
+            </div>
+        );
+    })
     .add('Charts with viewBy 2 attributes and \'Stack to 100%\' enabled with min/max setting', () => {
         const config = {
             stackMeasuresToPercent: true,
@@ -170,6 +183,20 @@ storiesOf('Internal/OptionalStacking', module)
     .add('Dual axis charts with viewBy 2 attributes and \'Stack to 100%\' enabled', () => {
         const config = {
             stackMeasuresToPercent: true,
+            ...DUAL_AXIS_CONFIG
+        };
+        return screenshotWrap(
+            <div>
+                {renderSupportedCharts(config)}
+            </div>
+        );
+    })
+    .add('Dual axis charts with viewBy 2 attributes and \'Stack to 100%\' enabled and dataLabels enabled', () => {
+        const config = {
+            stackMeasuresToPercent: true,
+            dataLabels: {
+                visible: true
+            },
             ...DUAL_AXIS_CONFIG
         };
         return screenshotWrap(

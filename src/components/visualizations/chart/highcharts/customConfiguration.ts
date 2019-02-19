@@ -360,6 +360,20 @@ function labelFormatter(config?: IChartConfig) {
     return formatLabel(this.y, get(this, 'point.format'), config);
 }
 
+export function percentageDataLabelFormatter(config?: IChartConfig) {
+    const isSingleAxis = get(this, 'series.chart.yAxis.length') !== 2;
+    const isPrimaryAxis = !get(this, 'series.yAxis.opposite', false);
+
+    // only format data labels to percentage for
+    //  * left or right axis on single axis chart, or
+    //  * primary axis on dual axis chart
+    if (isSingleAxis || isPrimaryAxis) {
+        const val = parseFloat((this.percentage).toFixed(2));
+        return `${val}%`;
+    }
+    return labelFormatter.call(this, config);
+}
+
 function labelFormatterHeatmap(options: any) {
     return formatLabel(this.point.value, options.formatGD, options.config);
 }
@@ -560,6 +574,10 @@ function getLabelsConfiguration(chartOptions: IChartOptions, _config: any, chart
         defaultFormat: get(axis, 'format')
     }));
 
+    const { stackMeasuresToPercent = false } = chartConfig || {};
+    // only applied to bar, column and dual axis chart
+    const dataLabelFormatter = stackMeasuresToPercent ? percentageDataLabelFormatter : labelFormatter;
+
     const DEFAULT_LABELS_CONFIG = {
         formatter: partial(labelFormatter, chartConfig),
         style,
@@ -576,14 +594,15 @@ function getLabelsConfiguration(chartOptions: IChartOptions, _config: any, chart
                 }
             },
             bar: {
-                dataLabels: DEFAULT_LABELS_CONFIG
+                dataLabels: {
+                    ...DEFAULT_LABELS_CONFIG,
+                    formatter: partial(dataLabelFormatter, chartConfig)
+                }
             },
             column: {
                 dataLabels: {
-                    formatter: partial(labelFormatter, chartConfig),
-                    style,
-                    allowOverlap: false,
-                    ...labelsConfig
+                    ...DEFAULT_LABELS_CONFIG,
+                    formatter: partial(dataLabelFormatter, chartConfig)
                 }
             },
             heatmap: {

@@ -434,6 +434,26 @@ storiesOf('Core components/ColumnChart', module)
             </div>
         )
     ))
+    .add('optional stacking chart with \'Stack to 100%\' and enabling data labels', () => (
+        screenshotWrap(
+            <div style={wrapperStyle}>
+                <ColumnChart
+                    projectId="storybook"
+                    measures={[MEASURE_1, MEASURE_2]}
+                    viewBy={[ATTRIBUTE_1, ATTRIBUTE_2]}
+                    config={{
+                        stackMeasuresToPercent: true,
+                        dataLabels: {
+                            visible: true
+                        }
+                    }}
+                    onError={onErrorHandler}
+                    LoadingComponent={null}
+                    ErrorComponent={null}
+                />
+            </div>
+        )
+    ))
     .add('optional stacking chart with \'Stack to 100%\' on right axis', () => (
         screenshotWrap(
             <div style={wrapperStyle}>
@@ -550,6 +570,29 @@ storiesOf('Core components/ColumnChart', module)
                     measures={[MEASURE_1, MEASURE_2, MEASURE_3]}
                     viewBy={[ATTRIBUTE_1, ATTRIBUTE_2]}
                     config={{
+                        secondary_yaxis: {
+                            measures: [MEASURE_3.measure.localIdentifier]
+                        },
+                        stackMeasuresToPercent: true
+                    }}
+                    onError={onErrorHandler}
+                    LoadingComponent={null}
+                    ErrorComponent={null}
+                />
+            </div>
+        )
+    ))
+    .add('optional stacking chart with dual axis and \'Stack to 100%\' and enabling data labels', () => (
+        screenshotWrap(
+            <div style={wrapperStyle}>
+                <ColumnChart
+                    projectId="storybook"
+                    measures={[MEASURE_1, MEASURE_2, MEASURE_3]}
+                    viewBy={[ATTRIBUTE_1, ATTRIBUTE_2]}
+                    config={{
+                        dataLabels: {
+                            visible: true
+                        },
                         secondary_yaxis: {
                             measures: [MEASURE_3.measure.localIdentifier]
                         },
