@@ -2,7 +2,8 @@
 import get = require("lodash/get");
 import head = require("lodash/head");
 import last = require("lodash/last");
-import { formatAsPercent, isInPercent } from "../customConfiguration";
+import { /*formatAsPercent, */isInPercent } from "../customConfiguration";
+import { normalizeValue } from './normalizeNumber';
 
 const DEFAULT_LIMIT_LENGTH = 4; // length of '0.00' is 4
 const DEFAULT_PADDING = 2;
@@ -119,16 +120,24 @@ function formatLabel(value: number, tickPositions: number[]): number {
     return roundNumber(numberStr, min, max);
 }
 
+function formatAsPercent(value: number, unit: number = 100) {
+    const val = value * unit;
+    return `${val}%`;
+}
+
 export function dualAxesLabelFormatter() {
-    const tickPositions: number[] = get(this, "axis.tickPositions", []);
-    this.value = formatLabel(this.value, tickPositions);
+    // const tickPositions: number[] = get(this, "axis.tickPositions", []);
+
+    this.value = normalizeValue(this);
+
+    // this.value = formatLabel(this.value, tickPositions);
 
     const stackMeasuresToPercent = get(this, "chart.userOptions.stackMeasuresToPercent", false);
     const seriesInAxis = get(this, "axis.series", []).length;
     if (stackMeasuresToPercent && seriesInAxis > 0) {
         const opposite = get(this, "axis.opposite", false);
         if (opposite === false) {
-            return formatAsPercent.call(this, 1);
+            return formatAsPercent(this.value, 1);
         }
     }
 
@@ -136,6 +145,6 @@ export function dualAxesLabelFormatter() {
     const isPercent = isInPercent(format);
 
     return isPercent
-        ? formatAsPercent.call(this) // 100%
+        ? formatAsPercent(this.value) // 100%
         : this.axis.defaultLabelFormatter.call(this); // 1000 -> 1k, 1500000 -> 1.5M
 }

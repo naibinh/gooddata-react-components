@@ -372,6 +372,8 @@ export function getTickPositioner() {
         // update tick amount to make grid lines synced on both axes
         tickAmount = Math.max(tickAmount, getTickAmount(tickPositions));
 
+        // tslint:disable-next-line
+        console.log(currentAxisIndex, tickPositions);
         return tickPositions;
     };
 }
