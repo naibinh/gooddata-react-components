@@ -5,6 +5,7 @@ import { render } from "react-dom";
 import cloneDeep = require("lodash/cloneDeep");
 import get = require("lodash/get");
 import set = require("lodash/set");
+import includes = require("lodash/includes");
 
 import { VisualizationObject, AFM } from "@gooddata/typings";
 
@@ -17,6 +18,7 @@ import {
     IVisProps,
     IBucketItem,
     IBucket,
+    IUiConfig,
 } from "../../../interfaces/Visualization";
 import { PluggableBaseChart } from "../baseChart/PluggableBaseChart";
 import { BUCKETS, METRIC, ATTRIBUTE } from "../../../constants/bucket";
@@ -25,7 +27,8 @@ import {
     sanitizeFilters,
     getBucketItemsByType,
     getPreferredBucketItems,
-    hasBucket,
+    getMeasures,
+    removeMeasuresShowOnSecondaryAxis,
 } from "../../../utils/bucketHelper";
 import { setGeoPushpinUiConfig } from "../../../utils/uiConfigHelpers/geoPushpinChartUiConfigHelper";
 import { removeSort, createSorts } from "../../../utils/sort";
@@ -52,49 +55,75 @@ export class PluggableGeoPushpinChart extends PluggableBaseChart {
     }
 
     public getExtendedReferencePoint(referencePoint: IReferencePoint): Promise<IExtendedReferencePoint> {
-        const clonedReferencePoint = cloneDeep(referencePoint);
-        let newReferencePoint: IExtendedReferencePoint = {
-            ...clonedReferencePoint,
-            uiConfig: cloneDeep(GEO_PUSHPIN_CHART_UICONFIG),
-        };
+        return super
+            .getExtendedReferencePoint(referencePoint)
+            .then((extendedReferencePoint: IExtendedReferencePoint) => {
+                let newReferencePoint: IExtendedReferencePoint = setGeoPushpinUiConfig(
+                    extendedReferencePoint,
+                    this.intl,
+                    this.type,
+                );
+                newReferencePoint = getReferencePointWithSupportedProperties(
+                    newReferencePoint,
+                    this.supportedPropertiesList,
+                );
+                newReferencePoint = removeSort(newReferencePoint);
+                return Promise.resolve(sanitizeFilters(newReferencePoint));
+            });
+    }
 
-        const buckets = get(clonedReferencePoint, BUCKETS, []);
-        const locations = getBucketItemsByType(buckets, BucketNames.LOCATION, [ATTRIBUTE]);
-        const measuresSize = this.getMeasureSizeBucketItem(buckets);
-        const measuresColor = this.getMeasureColorBucketItem(buckets);
+    public getUiConfig(): IUiConfig {
+        return cloneDeep(GEO_PUSHPIN_CHART_UICONFIG);
+    }
+
+    protected configureBuckets(extendedReferencePoint: IExtendedReferencePoint): IExtendedReferencePoint {
+        const buckets: IBucket[] = get(extendedReferencePoint, BUCKETS, []);
+        const allMeasures: IBucketItem[] = getMeasures(buckets);
+        const primaryMeasures: IBucketItem[] = getPreferredBucketItems(
+            buckets,
+            [BucketNames.MEASURES, BucketNames.SIZE],
+            [METRIC],
+        );
+        const secondaryMeasures: IBucketItem[] = getPreferredBucketItems(
+            buckets,
+            [BucketNames.SECONDARY_MEASURES, BucketNames.COLOR],
+            [METRIC],
+        );
+        const sizeMeasures: IBucketItem[] =
+            primaryMeasures.length > 0
+                ? primaryMeasures.slice(0, 1)
+                : allMeasures.filter(measure => !includes(secondaryMeasures, measure)).slice(0, 1);
+
+        const colorMeasures: IBucketItem[] =
+            secondaryMeasures.length > 0
+                ? secondaryMeasures.slice(0, 1)
+                : allMeasures.filter(measure => !includes(sizeMeasures, measure)).slice(0, 1);
+
         const segments = getPreferredBucketItems(
             buckets,
-            [BucketNames.STACK, BucketNames.SEGMENT],
+            [BucketNames.STACK, BucketNames.SEGMENT, BucketNames.COLUMNS],
             [ATTRIBUTE],
         );
 
-        set(newReferencePoint, BUCKETS, [
+        set(extendedReferencePoint, BUCKETS, [
             {
                 localIdentifier: BucketNames.LOCATION,
-                items: locations,
+                items: getBucketItemsByType(buckets, BucketNames.LOCATION, [ATTRIBUTE]),
             },
             {
                 localIdentifier: BucketNames.SIZE,
-                items: measuresSize,
+                items: removeMeasuresShowOnSecondaryAxis(sizeMeasures),
             },
             {
                 localIdentifier: BucketNames.COLOR,
-                items: measuresColor,
+                items: removeMeasuresShowOnSecondaryAxis(colorMeasures),
             },
             {
                 localIdentifier: BucketNames.SEGMENT,
                 items: segments,
             },
         ]);
-
-        newReferencePoint = setGeoPushpinUiConfig(newReferencePoint, this.intl, this.type);
-        newReferencePoint = getReferencePointWithSupportedProperties(
-            newReferencePoint,
-            this.supportedPropertiesList,
-        );
-        newReferencePoint = removeSort(newReferencePoint);
-
-        return Promise.resolve(sanitizeFilters(newReferencePoint));
+        return extendedReferencePoint;
     }
 
     protected renderConfigurationPanel() {
@@ -194,25 +223,5 @@ export class PluggableGeoPushpinChart extends PluggableBaseChart {
             ...resultSpecWithDimensions,
             sorts,
         };
-    }
-
-    private getMeasureSizeBucketItem(buckets: IBucket[]): IBucketItem[] {
-        if (hasBucket(buckets, BucketNames.MEASURES)) {
-            return getBucketItemsByType(buckets, BucketNames.MEASURES, [METRIC]).slice(0, 1);
-        }
-
-        return getBucketItemsByType(buckets, BucketNames.SIZE, [METRIC]);
-    }
-
-    private getMeasureColorBucketItem(buckets: IBucket[]): IBucketItem[] {
-        if (hasBucket(buckets, BucketNames.SECONDARY_MEASURES)) {
-            return getBucketItemsByType(buckets, BucketNames.SECONDARY_MEASURES, [METRIC]).slice(0, 1);
-        }
-
-        if (hasBucket(buckets, BucketNames.MEASURES)) {
-            return getBucketItemsByType(buckets, BucketNames.MEASURES, [METRIC]).slice(1, 2);
-        }
-
-        return getBucketItemsByType(buckets, BucketNames.COLOR, [METRIC]);
     }
 }

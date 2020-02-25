@@ -2025,3 +2025,31 @@ export const simpleGeoPushpinReferencePoint: IReferencePoint = {
         sortItems: [defaultSortItem],
     },
 };
+
+export const twoMeasuresWithShowInPercentOnSecondaryAxisReferencePoint: IReferencePoint = {
+    buckets: [
+        {
+            localIdentifier: "measures",
+            items: masterMeasuresWithPercentage.slice(2, 3),
+        },
+        {
+            localIdentifier: "secondary_measures",
+            items: masterMeasuresWithPercentage.slice(3, 4),
+        },
+        {
+            localIdentifier: "view",
+            items: [],
+        },
+        {
+            localIdentifier: "segment",
+            items: [],
+        },
+    ],
+    filters: {
+        localIdentifier: "filters",
+        items: geoAttributeFilters.slice(0, 1),
+    },
+    properties: {
+        sortItems: [defaultSortItem],
+    },
+};

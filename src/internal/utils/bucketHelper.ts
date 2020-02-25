@@ -802,6 +802,13 @@ export function setMeasuresShowOnSecondaryAxis(items: IBucketItem[], value: bool
     }));
 }
 
+export function removeMeasuresShowOnSecondaryAxis(items: IBucketItem[]): IBucketItem[] {
+    return items.map((item: IBucketItem) => ({
+        ...item,
+        [SHOW_ON_SECONDARY_AXIS]: null,
+    }));
+}
+
 export function getAllMeasuresShowOnSecondaryAxis(buckets: IBucket[]): IBucketItem[] {
     return getAllItemsByType(buckets, [METRIC]).filter(isShowOnSecondaryAxis);
 }
