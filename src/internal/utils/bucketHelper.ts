@@ -346,14 +346,6 @@ export function getPreferredBucketItems(
     return get(bucket, "items", []);
 }
 
-export function getLocationBucketItems(buckets: IBucket[]) {
-    return getPreferredBucketItems(
-        buckets,
-        [BucketNames.VIEW, BucketNames.LOCATION, BucketNames.ROWS, BucketNames.TREND],
-        [ATTRIBUTE],
-    ).filter((bucketItem: IBucketItem) => bucketItem.isLocationIconVisible);
-}
-
 export function getPreferredBucket(buckets: IBucket[], preference: string[], type: string[]): IBucket {
     return preference.reduce((result: IBucket, preference: string) => {
         if (result) {
