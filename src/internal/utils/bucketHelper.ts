@@ -346,6 +346,14 @@ export function getPreferredBucketItems(
     return get(bucket, "items", []);
 }
 
+export function getLocationBucketItems(buckets: IBucket[]) {
+    return getPreferredBucketItems(
+        buckets,
+        [BucketNames.VIEW, BucketNames.LOCATION, BucketNames.ROWS, BucketNames.TREND],
+        [ATTRIBUTE],
+    ).filter((bucketItem: IBucketItem) => bucketItem.isLocationIconVisible);
+}
+
 export function getPreferredBucket(buckets: IBucket[], preference: string[], type: string[]): IBucket {
     return preference.reduce((result: IBucket, preference: string) => {
         if (result) {
@@ -802,7 +810,7 @@ export function setMeasuresShowOnSecondaryAxis(items: IBucketItem[], value: bool
     }));
 }
 
-export function removeMeasuresShowOnSecondaryAxis(items: IBucketItem[]): IBucketItem[] {
+export function removeShowOnSecondaryAxis(items: IBucketItem[]): IBucketItem[] {
     return items.map((item: IBucketItem) => ({
         ...item,
         [SHOW_ON_SECONDARY_AXIS]: null,

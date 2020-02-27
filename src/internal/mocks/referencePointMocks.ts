@@ -320,6 +320,7 @@ export const geoAttributeItems: IBucketItem[] = [
         type: "attribute",
         aggregation: null,
         attribute: "attr.owner.country",
+        isLocationIconVisible: true,
     },
     {
         localIdentifier: "a2",

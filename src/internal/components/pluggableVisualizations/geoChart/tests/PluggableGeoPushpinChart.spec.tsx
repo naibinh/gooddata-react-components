@@ -3,7 +3,7 @@ import noop = require("lodash/noop");
 import * as referencePointMocks from "../../../../mocks/referencePointMocks";
 import * as uiConfigMocks from "../../../../mocks/uiConfigMocks";
 import { PluggableGeoPushpinChart } from "../PluggableGeoPushpinChart";
-import { IExtendedReferencePoint, IVisConstruct } from "../../../../interfaces/Visualization";
+import { IExtendedReferencePoint, IVisConstruct, IBucketItem } from "../../../../interfaces/Visualization";
 
 describe("PluggableGeoPushpinChart", () => {
     const defaultProps: IVisConstruct = {
@@ -45,15 +45,26 @@ describe("PluggableGeoPushpinChart", () => {
             });
         });
 
-        it("should not transform view by attribute to location attribute", async () => {
+        it("should transform view by attribute to location attribute", async () => {
+            const { oneMetricAndCategoryAndStackReferencePoint } = referencePointMocks;
+            const geoAttribute: IBucketItem = {
+                aggregation: null,
+                attribute: "geo.attr",
+                localIdentifier: "a1",
+                type: "attribute",
+                isLocationIconVisible: true,
+            };
+            // update view by attribute from normal attribute to geo attribute
+            oneMetricAndCategoryAndStackReferencePoint.buckets[1].items = [geoAttribute];
+
             const newExtendedReferencePoint = await geoPushpin.getExtendedReferencePoint(
-                referencePointMocks.oneMetricAndCategoryAndStackReferencePoint,
+                oneMetricAndCategoryAndStackReferencePoint,
             );
 
             expect(newExtendedReferencePoint.buckets).toEqual([
                 {
                     localIdentifier: "location",
-                    items: [],
+                    items: [geoAttribute],
                 },
                 {
                     localIdentifier: "size",

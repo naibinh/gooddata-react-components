@@ -160,6 +160,7 @@ export interface IBucketItem {
     attribute?: string;
     filters?: IBucketFilter[];
     granularity?: string;
+    isLocationIconVisible?: boolean;
     showInPercent?: boolean;
     showOnSecondaryAxis?: boolean;
     sort?: ISort;

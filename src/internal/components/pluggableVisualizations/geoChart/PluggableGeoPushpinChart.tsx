@@ -25,10 +25,9 @@ import { BUCKETS, METRIC, ATTRIBUTE } from "../../../constants/bucket";
 import { GEO_PUSHPIN_CHART_UICONFIG } from "../../../constants/uiConfig";
 import {
     sanitizeFilters,
-    getBucketItemsByType,
     getPreferredBucketItems,
     getMeasures,
-    removeMeasuresShowOnSecondaryAxis,
+    removeShowOnSecondaryAxis,
 } from "../../../utils/bucketHelper";
 import { setGeoPushpinUiConfig } from "../../../utils/uiConfigHelpers/geoPushpinChartUiConfigHelper";
 import { removeSort, createSorts } from "../../../utils/sort";
@@ -99,6 +98,13 @@ export class PluggableGeoPushpinChart extends PluggableBaseChart {
                 ? secondaryMeasures.slice(0, 1)
                 : allMeasures.filter(measure => !includes(sizeMeasures, measure)).slice(0, 1);
 
+        const locationItems: IBucketItem[] = getPreferredBucketItems(
+            buckets,
+            [BucketNames.VIEW, BucketNames.LOCATION, BucketNames.ROWS, BucketNames.TREND],
+            [ATTRIBUTE],
+        )
+            .filter((bucketItem: IBucketItem) => bucketItem.isLocationIconVisible)
+            .slice(0, 1);
         const segments = getPreferredBucketItems(
             buckets,
             [BucketNames.STACK, BucketNames.SEGMENT, BucketNames.COLUMNS],
@@ -108,15 +114,15 @@ export class PluggableGeoPushpinChart extends PluggableBaseChart {
         set(extendedReferencePoint, BUCKETS, [
             {
                 localIdentifier: BucketNames.LOCATION,
-                items: getBucketItemsByType(buckets, BucketNames.LOCATION, [ATTRIBUTE]),
+                items: locationItems,
             },
             {
                 localIdentifier: BucketNames.SIZE,
-                items: removeMeasuresShowOnSecondaryAxis(sizeMeasures),
+                items: removeShowOnSecondaryAxis(sizeMeasures),
             },
             {
                 localIdentifier: BucketNames.COLOR,
-                items: removeMeasuresShowOnSecondaryAxis(colorMeasures),
+                items: removeShowOnSecondaryAxis(colorMeasures),
             },
             {
                 localIdentifier: BucketNames.SEGMENT,
