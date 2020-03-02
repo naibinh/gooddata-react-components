@@ -1122,6 +1122,27 @@ export const oneMetricAndCategoryAndStackReferencePoint: IReferencePoint = {
     },
 };
 
+export const oneMetricAndGeoCategoryAndStackReferencePoint: IReferencePoint = {
+    buckets: [
+        {
+            localIdentifier: "measures",
+            items: masterMeasureItems.slice(0, 1),
+        },
+        {
+            localIdentifier: "view",
+            items: geoAttributeItems.slice(0, 1),
+        },
+        {
+            localIdentifier: "stack",
+            items: attributeItems.slice(1, 2),
+        },
+    ],
+    filters: {
+        localIdentifier: "filters",
+        items: [],
+    },
+};
+
 export const sameCategoryAndStackReferencePoint: IReferencePoint = {
     buckets: [
         {

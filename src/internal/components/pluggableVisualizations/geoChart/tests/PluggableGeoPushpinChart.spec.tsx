@@ -3,7 +3,7 @@ import noop = require("lodash/noop");
 import * as referencePointMocks from "../../../../mocks/referencePointMocks";
 import * as uiConfigMocks from "../../../../mocks/uiConfigMocks";
 import { PluggableGeoPushpinChart } from "../PluggableGeoPushpinChart";
-import { IExtendedReferencePoint, IVisConstruct, IBucketItem } from "../../../../interfaces/Visualization";
+import { IExtendedReferencePoint, IVisConstruct } from "../../../../interfaces/Visualization";
 
 describe("PluggableGeoPushpinChart", () => {
     const defaultProps: IVisConstruct = {
@@ -46,25 +46,24 @@ describe("PluggableGeoPushpinChart", () => {
         });
 
         it("should transform view by attribute to location attribute", async () => {
-            const { oneMetricAndCategoryAndStackReferencePoint } = referencePointMocks;
-            const geoAttribute: IBucketItem = {
-                aggregation: null,
-                attribute: "geo.attr",
-                localIdentifier: "a1",
-                type: "attribute",
-                isLocationIconVisible: true,
-            };
-            // update view by attribute from normal attribute to geo attribute
-            oneMetricAndCategoryAndStackReferencePoint.buckets[1].items = [geoAttribute];
+            const { oneMetricAndGeoCategoryAndStackReferencePoint } = referencePointMocks;
 
             const newExtendedReferencePoint = await geoPushpin.getExtendedReferencePoint(
-                oneMetricAndCategoryAndStackReferencePoint,
+                oneMetricAndGeoCategoryAndStackReferencePoint,
             );
 
             expect(newExtendedReferencePoint.buckets).toEqual([
                 {
                     localIdentifier: "location",
-                    items: [geoAttribute],
+                    items: [
+                        {
+                            localIdentifier: "a1",
+                            type: "attribute",
+                            aggregation: null,
+                            attribute: "attr.owner.country",
+                            isLocationIconVisible: true,
+                        },
+                    ],
                 },
                 {
                     localIdentifier: "size",

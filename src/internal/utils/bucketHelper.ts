@@ -803,10 +803,7 @@ export function setMeasuresShowOnSecondaryAxis(items: IBucketItem[], value: bool
 }
 
 export function removeShowOnSecondaryAxis(items: IBucketItem[]): IBucketItem[] {
-    return items.map((item: IBucketItem) => ({
-        ...item,
-        [SHOW_ON_SECONDARY_AXIS]: null,
-    }));
+    return setMeasuresShowOnSecondaryAxis(items, null);
 }
 
 export function getAllMeasuresShowOnSecondaryAxis(buckets: IBucket[]): IBucketItem[] {
