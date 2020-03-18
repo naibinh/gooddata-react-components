@@ -11,6 +11,7 @@ import {
     populationUri,
     densityUri,
     stateNamesUri,
+    stateNamesIdentifier,
     cityNamesUri,
 } from "../utils/fixturesGeoChart";
 
@@ -23,7 +24,7 @@ const colorMeasure = Model.measure(densityUri)
     .aggregation("sum")
     .alias("Density");
 const locationAttribute = Model.attribute(cityCoordinatesUri).localIdentifier("location");
-const segmentByAttribute = Model.attribute(stateNamesUri).localIdentifier("segment");
+const segmentByAttribute = Model.attribute(stateNamesIdentifier).localIdentifier("segment");
 const tooltipTextAttribute = Model.attribute(cityNamesUri).localIdentifier("tooltipText");
 
 export class GeoPushpinChartConfigurationExample extends Component {

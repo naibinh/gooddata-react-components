@@ -18,30 +18,6 @@ export const GeoPushpinChartDemo = () => (
 
         <hr className="separator" />
 
-        <h2 id="geo-pushpin-chart-clustering">Example of Geo Pushpin Chart with Clustering</h2>
-        <ExampleWithSource
-            for={() => <GeoPushpinChartClusteringExample />}
-            source={GeoPushpinChartClusteringExampleSRC}
-        />
-
-        <hr className="separator" />
-
-        <h2 id="geo-pushpin-chart-size-color">Example of Geo Pushpin Chart with Size and Color Legend</h2>
-        <ExampleWithSource
-            for={() => <GeoPushpinChartWithColorLegendExample />}
-            source={GeoPushpinChartWithColorLegendExampleSRC}
-        />
-
-        <hr className="separator" />
-
-        <h2 id="geo-pushpin-chart-category">Example of Geo Pushpin Chart with Size and Category Legend</h2>
-        <ExampleWithSource
-            for={() => <GeoPushpinChartWithCategoryLegendExample />}
-            source={GeoPushpinChartWithCategoryLegendExampleSRC}
-        />
-
-        <hr className="separator" />
-
         <h2 id="geo-pushpin-chart-configuration">Example of Geo Pushpin Chart with Geo Configuration</h2>
         <ExampleWithSource
             for={() => <GeoPushpinChartConfigurationExample />}
